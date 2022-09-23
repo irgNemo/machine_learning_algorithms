@@ -1,23 +1,29 @@
-import pandas
-
-def train_one_r(dataset_filename, train_sample_size, class_column_name):
-    filename = dataset_filename  # Dataset filename
-    train_sample_size = train_sample_size  # Training percentage
-    class_column_name = class_column_name
-
-    dataset = pandas.read_csv(filename)
-
-    x_train = dataset.sample(frac=train_sample_size)
-    y_train = x_train[class_column_name]
-    x_train = x_train.drop(columns=class_column_name)
-
-    x_test = dataset.drop(x_train.index)
-    y_test = x_test[class_column_name]
-    x_test = x_test.drop(columns=[class_column_name])
-
+def fit(x_train, y_train):
     frequency_table = compute_frequency_table(x_train, y_train)
     rules, error_rates = compute_rules(frequency_table)
-    find_attribute_with_min_error_rate(error_rates)
+    attribute_min_error = find_attribute_with_min_error_rate(error_rates)
+    rule = {attribute_min_error: rules[attribute_min_error]}
+    return rule
+
+
+def evaluate(rule, x_test, y_test):
+    print("Evaluate test set ...")
+    hits = 0
+    attribute = list(rule.keys())[0]
+    num_rows = x_test[attribute].shape[0]
+
+    for i in range(num_rows):
+        value = x_test[attribute].iloc[i]
+        expected_class = y_test.iloc[i]
+        estimated_class = rule[attribute][value].strip()
+
+        hits += 1 if expected_class == estimated_class else 0
+
+        print('Expected class: {} Estimated class: {} ¿Acierto?: {}'.format(expected_class, estimated_class,
+                                                                            expected_class == estimated_class))
+    print("Done.")
+    return hits
+
 
 
 def compute_frequency_table(x_train, y_train):
@@ -85,5 +91,12 @@ def compute_rules(frequency_table):
 
 
 def find_attribute_with_min_error_rate(error_rates):
-    for attribute in error_rates:
-        print(attribute)
+    return min(error_rates, key=error_rates.get)
+
+
+def print_rule(rule):
+    attribute = list(rule.keys())[0].strip()
+    print('{:^20}|{:^20}|{:^20}'.format('Attribute', 'Value', 'Estimated class'))
+    for attribute in rule:
+        for value in rule[attribute]:
+            print('{:^20}|{:^20}|{:^20}'.format(attribute, value, rule[attribute][value]))
