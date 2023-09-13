@@ -1,9 +1,10 @@
 def fit(x_train, y_train):
     frequency_table = compute_frequency_table(x_train, y_train)
-    rules, error_rates = compute_rules(frequency_table)
-    attribute_min_error = find_attribute_with_min_error_rate(error_rates)
-    rule = {attribute_min_error: rules[attribute_min_error]}
-    return rule
+    print(frequency_table)
+    #rules, error_rates = compute_rules(frequency_table)
+    #attribute_min_error = find_attribute_with_min_error_rate(error_rates)
+    #rule = {attribute_min_error: rules[attribute_min_error]}
+    #return rule
 
 
 def evaluate(rule, x_test, y_test):
@@ -30,22 +31,35 @@ def compute_frequency_table(x_train, y_train):
     print("Computing frequency table ... ")
 
     frequency_table = {}
-    expected_classes = y_train.unique()
+    domain_classes = y_train.unique()
 
     for column_name in x_train.columns:
         frequency_table[column_name] = {}
-        for row_index in range(len(x_train[column_name])):
-            value = x_train[column_name].iloc[row_index]
-            expected_class = y_train.iloc[row_index]
 
+        value_class_tuples = zip(x_train[column_name], y_train)
+
+        for value, expected_class in value_class_tuples:
             value = value.strip() if type(value) is str else value
 
             if value not in frequency_table[column_name].keys():
                 frequency_table[column_name][value] = {}
-                for class_name in expected_classes:
-                    frequency_table[column_name][value][class_name] = 0  # Initialization with laplace correction
+                for class_name in domain_classes:
+                    frequency_table[column_name][value][class_name] = 1  # Initialization with laplace correction
 
             frequency_table[column_name][value][expected_class] += 1
+
+        #for row_index in range(len(x_train[column_name])):
+        #    value = x_train[column_name].iloc[row_index]
+        #    expected_class = y_train.iloc[row_index]
+
+        #    value = value.strip() if type(value) is str else value
+
+        #    if value not in frequency_table[column_name].keys():
+        #        frequency_table[column_name][value] = {}
+        #        for class_name in domain_classes:
+        #            frequency_table[column_name][value][class_name] = 1  # Initialization with laplace correction
+
+        #    frequency_table[column_name][value][expected_class] += 1
 
     print("Done.")
     return frequency_table
