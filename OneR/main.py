@@ -19,12 +19,12 @@ def main():
     x_test = x_test.drop(columns=[class_column_name])
 
     model = OneR.fit(x_train, y_train)
-    #OneR.print_rule(model)
+    OneR.print_rule(model)
 
-    #hits = OneR.evaluate(model, x_test, y_test)
-    #test_size = len(y_test)
+    hits = OneR.evaluate(model, x_test, y_test)
+    test_size = len(y_test)
 
-    #print('Hits {} --- Accuracy: {}'.format(hits, hits/test_size))
+    print('Hits {} --- Accuracy: {}'.format(hits, hits/test_size))
 
 
 if __name__ == '__main__':

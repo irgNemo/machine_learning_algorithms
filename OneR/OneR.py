@@ -1,10 +1,9 @@
 def fit(x_train, y_train):
     frequency_table = compute_frequency_table(x_train, y_train)
-    print(frequency_table)
-    #rules, error_rates = compute_rules(frequency_table)
-    #attribute_min_error = find_attribute_with_min_error_rate(error_rates)
-    #rule = {attribute_min_error: rules[attribute_min_error]}
-    #return rule
+    rules, error_rates = compute_rules(frequency_table)
+    attribute_min_error = find_attribute_with_min_error_rate(error_rates)
+    rule = {attribute_min_error: rules[attribute_min_error]}
+    return rule
 
 
 def evaluate(rule, x_test, y_test):
@@ -14,7 +13,7 @@ def evaluate(rule, x_test, y_test):
     num_rows = x_test[attribute].shape[0]
 
     for i in range(num_rows):
-        value = x_test[attribute].iloc[i]
+        value = x_test[attribute].iloc[i].strip()
         expected_class = y_test.iloc[i]
         estimated_class = rule[attribute][value].strip()
 
@@ -28,7 +27,7 @@ def evaluate(rule, x_test, y_test):
 
 
 def compute_frequency_table(x_train, y_train):
-    print("Computing frequency table ... ")
+    print("Computing frequencies table ... ")
 
     frequency_table = {}
     domain_classes = y_train.unique()
@@ -47,19 +46,6 @@ def compute_frequency_table(x_train, y_train):
                     frequency_table[column_name][value][class_name] = 1  # Initialization with laplace correction
 
             frequency_table[column_name][value][expected_class] += 1
-
-        #for row_index in range(len(x_train[column_name])):
-        #    value = x_train[column_name].iloc[row_index]
-        #    expected_class = y_train.iloc[row_index]
-
-        #    value = value.strip() if type(value) is str else value
-
-        #    if value not in frequency_table[column_name].keys():
-        #        frequency_table[column_name][value] = {}
-        #        for class_name in domain_classes:
-        #            frequency_table[column_name][value][class_name] = 1  # Initialization with laplace correction
-
-        #    frequency_table[column_name][value][expected_class] += 1
 
     print("Done.")
     return frequency_table
