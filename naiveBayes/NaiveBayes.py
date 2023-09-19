@@ -1,21 +1,17 @@
 import pandas as pd
 import itertools as it
+import copy
 
 class NaiveBayes():
     def __init__(self):
         self.frequency_tables = None
+        self.likelihood_table = None
 
     def fit(self, x_train, y_train, laplace_correction=True):
-        self.compute_frequency_table(x_train, y_train, laplace_correction)
-
-        for attribute, df in self.frequency_tables.items():
-            if attribute[1] == 'categorical':
-                for column_name in df.columns:
-                   denominator = df[column_name].sum()
-                   for idx in df.index:
-                       df.at[idx, column_name] = df.at[idx, column_name]/denominator
-
-        return self.frequency_tables
+        self.frequency_tables = self.compute_frequency_table(x_train, y_train, laplace_correction)
+        frequency_tables_copy = copy.deepcopy(self.frequency_tables)
+        self.likelihood_tables = self.compute_likelihood_table(frequency_tables_copy)
+        return self.likelihood_tables
 
     def predict(self, x_train, y_train):
         class_domain = y_train.unique()
@@ -30,8 +26,8 @@ class NaiveBayes():
                     elif column_name[1] == 'numerical':
                         pass
 
-    def compute_frequency_table(self, x_train, y_train, laplace_correction):
-        self.frequency_tables = {}
+    def compute_frequency_table(iself, x_train, y_train, laplace_correction):
+        frequency_tables = {}
         frequency_init_value = 1.0 if laplace_correction else 0.0
 
         for column_name in x_train:
@@ -45,7 +41,7 @@ class NaiveBayes():
                     val_feature = df_attribute_class.at[row, column_name]
                     val_class = df_attribute_class.at[row, y_train.name]
                     df_frequency_table.at[val_feature, val_class] += 1
-                self.frequency_tables[column_name] = df_frequency_table
+                frequency_tables[column_name] = df_frequency_table
             elif column_name[1] == 'numerical':
                 stats_per_class = {}
                 for current_class in class_domain:
@@ -54,12 +50,19 @@ class NaiveBayes():
                     std = df_filtered_by_class[column_name].std()
                     stats_per_class[current_class] = {'mean':mean, 'std':std}
                     
-                self.frequency_tables[column_name] = stats_per_class
+                frequency_tables[column_name] = stats_per_class
 
-        return self.frequency_tables 
+        return frequency_tables 
     
-    def compute_likelihood_table():
-        pass
+    def compute_likelihood_table(self, frequency_tables):
+        frequency_tables_copy = frequency_tables.copy()
+        for attribute, df in frequency_tables_copy.items():
+            if attribute[1] == 'categorical':
+                for column_name in df.columns:
+                   denominator = df[column_name].sum()
+                   for idx in df.index:
+                       df.at[idx, column_name] = df.at[idx, column_name]/denominator
+        return frequency_tables_copy
 
 
 
