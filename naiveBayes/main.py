@@ -12,12 +12,13 @@ def main():
     
     x_train = train_set.iloc[:,0:-1]
     y_train = train_set.iloc[:,-1]
-    naive_bayes.fit(x_train, y_train)
+
+    likelihood_tables = naive_bayes.fit(x_train, y_train, verbose_likelihood_table=True)
    
-    naive_bayes.print_frequency_tables()
-    
     x_test = test_set.iloc[:, 0:-1]
     y_test = test_set.iloc[:,-1]
+
+    print(x_test)
     naive_bayes.predict(x_test, y_test)
 
 def split_dataset(df:pd.DataFrame, train_size:int)->tuple:
