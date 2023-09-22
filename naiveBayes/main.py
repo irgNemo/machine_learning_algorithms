@@ -13,13 +13,14 @@ def main():
     x_train = train_set.iloc[:,0:-1]
     y_train = train_set.iloc[:,-1]
 
-    likelihood_tables = naive_bayes.fit(x_train, y_train, verbose_likelihood_table=True)
+    likelihood_tables = naive_bayes.fit(x_train, y_train, verbose_likelihood=True, verbose_frequency=True)
    
     x_test = test_set.iloc[:, 0:-1]
     y_test = test_set.iloc[:,-1]
 
-    print(x_test)
-    naive_bayes.predict(x_test, y_test)
+    predictions = naive_bayes.predict(x_test, y_test, df.iloc[:,-1].unique(), verbose=True)
+
+    print("\nClase estimada:\n{}".format(predictions))
 
 def split_dataset(df:pd.DataFrame, train_size:int)->tuple:
     train_set = df.sample(frac=train_size)
