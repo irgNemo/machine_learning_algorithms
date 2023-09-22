@@ -4,6 +4,7 @@ import pandas as pd
 import argparse
 import NaiveBayes as nb
 
+# TODO: Funcion de evaluacion del modelo
 def main():
     args = parameters_parsing().parse_args()
     df = pd.read_csv(args.input_file, header=[0,1])
@@ -22,6 +23,7 @@ def main():
 
     print("\nClase estimada:\n{}".format(predictions))
 
+#TODO: Division estratificada
 def split_dataset(df:pd.DataFrame, train_size:int)->tuple:
     train_set = df.sample(frac=train_size)
     test_set = df.drop(index=train_set.index)
