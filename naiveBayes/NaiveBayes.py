@@ -125,5 +125,5 @@ class NaiveBayes():
     def get_frequency_tables(self):
         return self.frequency_tables
 
-    def get_likelihood_tables():
+    def get_likelihood_tables(self):
         return self.likelihood_tables
